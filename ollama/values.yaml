@@ -1,0 +1,49 @@
+replicaCount: 3
+
+image:
+  repository: ollama/ollama
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    memory: "56Gi"
+    cpu: "16"
+    nvidia.com/gpu: "1"  # Request 1 GPU
+  limits:
+    memory: "56Gi"
+    cpu: "16"
+    nvidia.com/gpu: "1"  # Limit to 1 GPU
+
+nodeSelector:
+  gpu: "true"
+tolerations: []
+affinity: {}
+
+runtimeClassName: nvidia
+
+service:
+  type: LoadBalancer
+  port: 8080
+  targetPort: 11434
+
+ingress:
+  enabled: false
+  name: ""
+  nginx:
+    enabled: false
+  path: /
+  hosts:
+    - host: chart-example.local
+      paths:
+        - /
+  tls: []
+
+persistence:
+  enabled: true
+  storageClass: nfs-client
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
