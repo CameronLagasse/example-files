@@ -1,0 +1,11 @@
+ollama
+flask
+slack_sdk
+requests
+psycopg2-binary
+pdfplumber
+pillow
+pandas
+openpyxl
+markdown
+html-slacker

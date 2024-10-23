@@ -1,0 +1,3 @@
+## Slack User IDs go here, line after line.
+#UserID1
+#UserID2

@@ -1,0 +1,6 @@
+app= ""
+client= ""
+slack_token = ""
+ollama_client = ""
+ollama_model = ""
+llava_model = ""
