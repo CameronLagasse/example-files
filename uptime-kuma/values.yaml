@@ -1,0 +1,37 @@
+nameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: louislam/uptime-kuma
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+ingress:
+  enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/websocket: "true"
+  hosts:
+    - host: uptime.cameronlagasse.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: cameronlagasse-com-tls
+      hosts:
+        - uptime.cameronlagasse.com
+
+resources: {}
+
+volumeClaimTemplates:
+  storage: 1Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: []

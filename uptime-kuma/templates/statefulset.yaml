@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-uptime-kuma
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Release.Name }}-uptime-kuma-service
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-uptime-kuma
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-uptime-kuma
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: UPTIME_KUMA_PORT
+              value: "{{ .Values.service.port }}"
+            - name: PORT
+              value: "{{ .Values.service.port }}"
+          ports:
+            - name: {{ .Chart.Name }}
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: kuma-data
+              mountPath: /app/data
+  volumeClaimTemplates:
+    - metadata:
+        name: kuma-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: {{ .Values.volumeClaimTemplates.storage }}
