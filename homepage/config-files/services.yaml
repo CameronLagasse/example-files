@@ -1,0 +1,65 @@
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Network:
+    - Pi-Hole:
+        href: https://pihole.cameronlagasse.com/admin
+        description: Pi-Hole DNS Server
+        icon: https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Pi-hole_Logo.png/640px-Pi-hole_Logo.png
+
+    - Traefik:
+        href: https://traefik.cameronlagasse.com/dashboard/#/
+        description: Traefik Ingress Controller
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/traefik-proxy.svg
+
+    - Unifi:
+        href: https://unifi.ui.com/consoles/your-unifi-dashboard
+        description: Unifi Network Gateway
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/unifi.svg
+
+- Monitoring:
+    - LibreNMS:
+        href: https://librenms.cameronlagasse.com
+        description: LibreNMS Network Monitoring
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/librenms.svg
+
+    - Grafana:
+        href: https://grafana.cameronlagasse.com/d/adtx6bdqhoyyob/internet-speed?orgId=1
+        description: Grafana Dashboards
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/grafana.svg
+
+    - Prometheus:
+        href: https://prometheus.cameronlagasse.com/targets?search=
+        description: Prometheus Kubernetes Monitoring
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prometheus.svg
+
+    - Home Services:
+        href: https://uptime.cameronlagasse.com/status/homeservices
+        description: Home Services Uptime Monitor
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/uptime-kuma.svg
+
+    - Network Devices:
+        href: https://uptime.cameronlagasse.com/status/networking
+        description: Network Devices Uptime Monitor
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/uptime-kuma.svg
+
+- Development/Automation:
+    - ArgoCD:
+        href: https://argocd.cameronlagasse.com/
+        description: ArgoCD Declarative GitOps for Kubernetes
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/argocd.svg
+
+    - Home Assistant:
+        href: https://your-home-assistant.ui.nabu.casa/home-dashboard/0
+        description: Home Assistant Dashboard
+        icon: https://play-lh.googleusercontent.com/bGn6qxUHwqZmgtv7RwgxCzl4Uy26SFQrJljVmoOvoIKWa-Xty8s0vOUWcgovUAEAKXnI
+
+    - OpenWebUI:
+        href: https://openwebui.cameronlagasse.com/
+        description: Web UI to interact with local LLMs
+        icon: https://dashboard.snapcraft.io/site_media/appmedia/2024/02/favicon_pUYczil.png
+
+    - Wiki:
+        href: https://wiki.cameronlagasse.com/
+        description: Internal Documentation for Homelab Projects
+        icon: https://cdn-images.threadless.com/~tms/wikijs/products/669711/shirt-1531875065-b80b73dd568a551445296d8a5cdcf3ca.png?v=3&d=g6NvcHOWk6R0cmltksLCgJOmcmVzaXplkIOld2lkdGjLQI8gAAAAAACmaGVpZ2h0y0CPIAAAAAAAqGFsbG93X3VwwpOvY2FudmFzX2NlbnRlcmVkks0EsM0EsIGqYmFja2dyb3VuZKYwMDAwMDCTpnJlc2l6ZZHNAyCAk69jYW52YXNfY2VudGVyZWSTzQMgzQMgpyNmZmZmZmaAk6ZlbmNvZGWSo2pwZ1WApWZvcmNlwqlvbmx5X21ldGHC&f=mp

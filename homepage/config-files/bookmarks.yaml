@@ -1,0 +1,18 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Portfolio:
+    - Cameron Lagasse:
+        - abbr: CL
+          href: https://cameronlagasse.com/
+
+- Developer:
+    - Github:
+        - abbr: GH
+          href: https://github.com/your-repo
+
+- Finance:
+    - Monarch Money:
+        - abbr: MM
+          href: https://app.monarchmoney.com/dashboard

@@ -1,0 +1,21 @@
+replicaCount: 4
+
+image:
+  repository: ghcr.io/gethomepage/homepage
+  tag: latest
+
+service:
+  name: homepage
+  type: NodePort
+  port: 3003
+  targetPort: 3000
+
+persistence:
+  enabled: true
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+    - ReadOnlyMany
+  size: 1Gi
+
+resources: {}

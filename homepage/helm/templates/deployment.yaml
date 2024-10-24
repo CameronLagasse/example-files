@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage
+  labels:
+    io.kompose.service: homepage
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      io.kompose.service: homepage
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: homepage
+    spec:
+      containers:
+        - name: homepage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+              hostPort: 3003
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/config
+              name: homepage-claim0
+            - mountPath: /app/public/images
+              name: homepage-claim2
+            - mountPath: /var/run/docker.sock
+              name: homepage-claim1
+              readOnly: true
+      volumes:
+        - name: homepage-claim0
+          persistentVolumeClaim:
+            claimName: homepage-claim0
+        - name: homepage-claim1
+          persistentVolumeClaim:
+            claimName: homepage-claim1
+            readOnly: true
+        - name: homepage-claim2
+          persistentVolumeClaim:
+            claimName: homepage-claim2

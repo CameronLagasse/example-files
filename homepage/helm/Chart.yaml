@@ -1,0 +1,4 @@
+apiVersion: v2
+name: homepage
+description: A Helm chart for the Homepage application
+version: 0.1.0

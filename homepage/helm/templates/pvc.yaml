@@ -1,0 +1,45 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homepage-claim0
+  labels:
+    io.kompose.service: homepage-claim0
+spec:
+  accessModes:
+    - {{ index .Values.persistence.accessModes 0 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homepage-claim1
+  labels:
+    io.kompose.service: homepage-claim1
+spec:
+  accessModes:
+    - {{ index .Values.persistence.accessModes 1 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homepage-claim2
+  labels:
+    io.kompose.service: homepage-claim2
+spec:
+  accessModes:
+    - {{ index .Values.persistence.accessModes 0 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+{{- end }}
