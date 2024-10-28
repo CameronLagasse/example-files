@@ -1,0 +1,108 @@
+replicaCount: 4
+
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 80
+  httpsPort: 443
+  httpsTargetPort: 443
+
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-client
+  size: 1Gi
+
+tlsSecretName: cameronlagasse-com-origin-tls
+
+configMap:
+  name: nginx-config
+  namespace: nginx
+
+pvc:
+  name: nginx-claim0
+  namespace: nginx
+
+nginx:
+  config: |
+    # HTTP to HTTPS redirect
+
+    #    server {
+
+    #    listen 80;
+
+    #    listen [::]:80;
+
+    #    server_name cameronlagasse.com www.cameronlagasse.com
+    #    wiki.cameronlagasse.com portfolio.cameronlagasse.com;
+
+    #    location / {
+
+    #        return 301 https://$host$request_uri;
+
+    #    }
+
+    #}
+
+
+    # HTTPS configuration for cameronlagasse.com
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name cameronlagasse.com www.cameronlagasse.com;
+
+        root /usr/share/nginx/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        ssl_certificate /etc/nginx/certs/tls.crt;
+        ssl_certificate_key /etc/nginx/certs/tls.key;
+
+        location / {
+            # Directly serve content or set up specific locations here
+            try_files $uri $uri/ =404;
+        }
+    }
+
+    # HTTPS configuration for portfolio.cameronlagasse.com
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name portfolio.cameronlagasse.com;
+
+        root /usr/share/nginx/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        ssl_certificate /etc/nginx/certs/tls.crt;
+        ssl_certificate_key /etc/nginx/certs/tls.key;
+
+        location / {
+            # Directly serve content or set up specific locations here
+            try_files $uri $uri/ =404;
+        }
+    }
+
+    # HTTPS configuration for wiki.cameronlagasse.com
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name wiki.cameronlagasse.com;
+
+        ssl_certificate /etc/nginx/certs/tls.crt;
+        ssl_certificate_key /etc/nginx/certs/tls.key;
+
+        location / {
+            proxy_pass http://x.x.x.x;  # Internal IP for wiki.cameronlagasse.com
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
