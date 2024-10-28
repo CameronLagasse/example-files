@@ -1,0 +1,4 @@
+apiVersion: v2
+name: pihole
+description: A Helm chart for Pi-hole
+version: 0.1.0
