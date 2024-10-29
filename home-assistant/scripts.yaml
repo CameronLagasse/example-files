@@ -1,0 +1,170 @@
+test:
+  alias: test
+  sequence:
+  - wait_for_trigger:
+    - platform: device
+      device_id: 9f256854b952bc2a600904698210ac49
+      domain: media_player
+      entity_id: f988131ebbd50dc95e3ecf51fcf29a44
+      type: turned_on
+  - service: media_player.play_media
+    data:
+      media_content_id: turn off kitchen lights
+      media_content_type: routine
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+  description: ''
+kitchen_lights:
+  alias: Kitchen Lights
+  sequence:
+  - service: input_boolean.toggle
+    entity_id: input_boolean.kitchen_light
+  - service: media_player.play_media
+    data:
+      media_content_id: turn off kitchen lights
+      media_content_type: routine
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+  description: ''
+arm_the_house:
+  alias: Arm the House
+  sequence:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.arm_ring
+  - service: media_player.play_media
+    data:
+      media_content_id: arm the house
+      media_content_type: routine
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+  description: ''
+toggle_kitchen_lights:
+  sequence:
+  - service: script.turn_on
+    data_template:
+      entity_id: "{% if is_state('input_boolean.kitchen_light', 'on') %}\n  script.turn_off_kitchen_lights\n{%
+        else %}\n  script.turn_on_kitchen_lights\n{% endif %}\n"
+turn_on_kitchen_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn on kitchen lights
+      media_content_type: routine
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.kitchen_light
+turn_off_kitchen_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn off kitchen lights
+      media_content_type: routine
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.kitchen_light
+toggle_bedroom_lights:
+  sequence:
+  - service: script.turn_on
+    data_template:
+      entity_id: "{% if is_state('input_boolean.bedroom_light', 'on') %}\n  script.turn_off_bedroom_lights\n{%
+        else %}\n  script.turn_on_bedroom_lights\n{% endif %}\n"
+turn_on_bedroom_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn on the bedroom lights
+      media_content_type: routine
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.bedroom_light
+turn_off_bedroom_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn off bedroom lights
+      media_content_type: routine
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.bedroom_light
+toggle_bedroom_fan:
+  sequence:
+  - service: script.turn_on
+    data_template:
+      entity_id: "{% if is_state('input_boolean.bedroom_fan', 'on') %}\n  script.turn_off_bedroom_fan\n{%
+        else %}\n  script.turn_on_bedroom_fan\n{% endif %}\n"
+turn_on_bedroom_fan:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn on the bedroom fan
+      media_content_type: routine
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.bedroom_fan
+turn_off_bedroom_fan:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn off the bedroom fan
+      media_content_type: routine
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.bedroom_fan
+toggle_arm_ring:
+  sequence:
+  - service: script.turn_on
+    data_template:
+      entity_id: "{% if is_state('input_boolean.arm_ring', 'on') %}\n  script.arm_ring_off\n{%
+        else %}\n  script.arm_ring_on\n{% endif %}\n"
+arm_ring_on:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: arm the house
+      media_content_type: routine
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.arm_ring
+arm_ring_off:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: disarm the house
+      media_content_type: routine
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.arm_ring
+toggle_front_lights:
+  sequence:
+  - service: script.turn_on
+    data_template:
+      entity_id: "{% if is_state('input_boolean.front_light', 'on') %}\n  script.turn_off_front_lights\n{%
+        else %}\n  script.turn_on_front_lights\n{% endif %}\n"
+turn_on_front_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn on the front lights
+      media_content_type: routine
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.front_light
+turn_off_front_lights:
+  sequence:
+  - service: media_player.play_media
+    target:
+      device_id: 9f256854b952bc2a600904698210ac49
+    data:
+      media_content_id: turn off the front lights
+      media_content_type: routine
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.front_light

@@ -1,0 +1,82 @@
+default_config:
+
+http:
+  base_url: https://homeassistant.cameronlagasse.com/
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.0.0.0/8  # You may also provide the subnet mask
+  ip_ban_enabled: false
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+input_boolean:
+  kitchen_light:
+    name: Kitchen Light
+    initial: off
+    icon: mdi:light-switch
+
+  bedroom_light:
+    name: Bedroom Light
+    initial: off
+    icon: mdi:light-switch
+
+  bedroom_fan:
+    name: Bedroom Fan
+    initial: off
+    icon: mdi:ceiling-fan
+
+  arm_ring:
+    name: Arm Ring
+    initial: off
+    icon: mdi:alarm-panel
+
+  front_light:
+    name: Front Lights
+    initial: off
+    icon: mdi:outdoor-lamp
+
+group:
+  all_alexa:
+    name: All Alexa Devices
+    entities:
+      - media_player.echo_show_10
+      - media_player.echo_show_5
+      - media_player.cam_s_echo_studio
+      - media_player.cam_lagasse_s_echo_dot_5th_gen
+      # Add all your Alexa media player entities here
+
+sensor:
+  - platform: rest
+    name: Uptime Kuma Monitor 1
+    resource: https://uptime.cameronlagasse.com/api/status
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "api-key"
+    value_template: "{{ value_json.monitors[0].status }}"
+    json_attributes_path: "$.monitors[0]"
+    json_attributes:
+      - name
+      - status
+      - uptime
+      - last_check
+    scan_interval: 300
+  - platform: rest
+    name: Uptime Kuma Monitor 2
+    resource: https://uptime.cameronlagasse.com/api/status
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "api-key"
+    value_template: "{{ value_json.monitors[1].status }}"
+    json_attributes_path: "$.monitors[1]"
+    json_attributes:
+      - name
+      - status
+      - uptime
+      - last_check
+    scan_interval: 300
