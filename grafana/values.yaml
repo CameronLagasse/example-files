@@ -1,0 +1,18 @@
+replicaCount: 4
+
+image:
+  repository: grafana/grafana
+  tag: latest
+
+service:
+  name: grafana-service
+  port: 3000
+
+persistence:
+  enabled: true
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  size: 100Mi
+
+resources: {}

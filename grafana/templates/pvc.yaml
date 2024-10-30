@@ -1,0 +1,30 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-claim0
+  labels:
+    io.kompose.service: grafana-claim0
+spec:
+  accessModes:
+    - {{ index .Values.persistence.accessModes 0 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-claim1
+  labels:
+    io.kompose.service: grafana-claim1
+spec:
+  accessModes:
+    - {{ index .Values.persistence.accessModes 0 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+{{- end }}
