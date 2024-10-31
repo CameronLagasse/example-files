@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 4
 
 image:
   repository: cbcrowe/pihole-unbound
@@ -28,47 +28,10 @@ service:
     - name: "5335-tcp"
       port: 5335
       targetPort: 5335
+  loadBalancerIP: x.x.x.x # Your LB IP
 
 persistence:
-  enabled: true
-  useExisting: false # Add this line
-  existingClaimNames: # Add this section
-    claim0: "pihole-claim0"
-    claim1: "pihole-claim1"
   storageClassName: nfs-client
-  accessModes:
-    - ReadWriteMany
   size:
     claim0: 20Gi
     claim1: 100Mi
-
-resources:
-  requests:
-    cpu: "2"
-    memory: "4Gi"
-  limits:
-    cpu: "2"
-    memory: "4Gi"
-
-env:
-  DNSMASQ_LISTENING: single
-  DNSSEC: '"true"'
-  FTLCONF_LOCAL_IPV4: x.x.x.x # LoadBalancer IP
-  PIHOLE_DNS_: 127.0.0.1#5335
-  TZ: 'US/New_York'
-  WEBPASSWORD: your-password
-
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - worker1
-                - worker2
-                - worker3
-                - worker5
-                - worker4
-                - clustermaster
