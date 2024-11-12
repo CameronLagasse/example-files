@@ -3,7 +3,10 @@
 # Create speedtest directory
 mkdir -p /home/itadmin/speedtest
 
-cd /home/itadmin/speedtest || { echo "Failed to change directory to ~/speedtest"; exit 1; }
+cd /home/itadmin/speedtest || {
+    echo "Failed to change directory to ~/speedtest"
+    exit 1
+}
 
 # Update and install packages
 apt-get update
@@ -25,23 +28,26 @@ sleep 10
 if influx -execute "CREATE DATABASE internetspeed"; then
     echo "Database created successfully"
 else
-    echo "Failed to create database"; exit 1;
+    echo "Failed to create database"
+    exit 1
 fi
 
 if influx -execute "CREATE USER \"your-username\" WITH PASSWORD 'your-password'"; then
     echo "User created successfully"
 else
-    echo "Failed to create user"; exit 1;
+    echo "Failed to create user"
+    exit 1
 fi
 
 if influx -execute "GRANT ALL ON \"internetspeed\" TO \"your-username\""; then
     echo "Permissions granted successfully"
 else
-    echo "Failed to grant permissions"; exit 1;
+    echo "Failed to grant permissions"
+    exit 1
 fi
 
 # Create speedtest script
-cat << 'EOF' > speedtest_script.py
+cat <<'EOF' >speedtest_script.py
 #!/usr/bin/env python3
 
 import speedtest
@@ -129,13 +135,17 @@ EOF
 if [ -f "speedtest_script.py" ]; then
     echo "Python script has been created successfully"
 else
-    echo "Failed to create Python script"; exit 1;
+    echo "Failed to create Python script"
+    exit 1
 fi
 
 # Make the Python script executable
 chmod +x speedtest_script.py
 
 # Add a cron job to run the speedtest script every 5 minutes
-(crontab -l 2>/dev/null; echo "*/5 * * * * /usr/bin/python3 /home/itadmin/speedtest/speedtest_script.py") | crontab -
+(
+    crontab -l 2>/dev/null
+    echo "*/5 * * * * /usr/bin/python3 /home/itadmin/speedtest/speedtest_script.py"
+) | crontab -
 
 echo "Cron job has been set up to run every 5 minutes"%
