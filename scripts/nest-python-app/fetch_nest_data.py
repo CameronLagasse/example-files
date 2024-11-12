@@ -27,7 +27,8 @@ last_timestamp = None
 # Energy consumption and cost parameters
 btuh_per_hour = 88000  # Furnace input in BTU/h
 therms_per_hour = btuh_per_hour / 100000  # Therms consumed per hour
-cost_per_therm = .78  # Cost of natural gas in USD per therm
+cost_per_therm = 0.78  # Cost of natural gas in USD per therm
+
 
 def request_tokens():
     global oauth2clientid
@@ -35,65 +36,91 @@ def request_tokens():
     global access_token
     global refresh_token
     try:
-        with open('.mynest.json') as json_file:
+        with open(".mynest.json") as json_file:
             data = json.load(json_file)
-            access_token = data['access_token']
-            refresh_token = data['refresh_token']
-            print('access token:', access_token)
-            print('refresh token:', refresh_token)
+            access_token = data["access_token"]
+            refresh_token = data["refresh_token"]
+            print("access token:", access_token)
+            print("refresh token:", refresh_token)
     except FileNotFoundError:
         print(".mynest.json not found, fetching new tokens...")
-        request_token_url = 'https://www.googleapis.com/oauth2/v4/token'
-        params = {'client_id': oauth2clientid,
-                  'client_secret': clientsecret,
-                  'code': authorization_code,
-                  'grant_type': 'authorization_code',
-                  'redirect_uri': 'https://www.google.com'}
+        request_token_url = "https://www.googleapis.com/oauth2/v4/token"
+        params = {
+            "client_id": oauth2clientid,
+            "client_secret": clientsecret,
+            "code": authorization_code,
+            "grant_type": "authorization_code",
+            "redirect_uri": "https://www.google.com",
+        }
         request_token_resp = requests.post(request_token_url, params=params)
         if request_token_resp.status_code != 200:
             print(request_token_resp.status_code)
         else:
-            access_token = request_token_resp.json()['access_token']
-            refresh_token = request_token_resp.json()['refresh_token']
-            with open('.mynest.json', 'w') as json_file:
+            access_token = request_token_resp.json()["access_token"]
+            refresh_token = request_token_resp.json()["refresh_token"]
+            with open(".mynest.json", "w") as json_file:
                 json.dump(request_token_resp.json(), json_file)
+
 
 # Refresh access token when it expires
 def refresh_access():
     global access_token
-    refresh_url = 'https://www.googleapis.com/oauth2/v4/token?'
+    refresh_url = "https://www.googleapis.com/oauth2/v4/token?"
     params = {
-        'client_id': oauth2clientid,
-        'client_secret': clientsecret,
-        'refresh_token': refresh_token,
-        'grant_type': 'refresh_token'
+        "client_id": oauth2clientid,
+        "client_secret": clientsecret,
+        "refresh_token": refresh_token,
+        "grant_type": "refresh_token",
     }
     refresh_resp = requests.post(refresh_url, params=params)
-    
+
     if refresh_resp.status_code != 200:
         print(f"Error refreshing token: {refresh_resp.status_code} {refresh_resp.text}")
     else:
-        access_token = refresh_resp.json()['access_token']
+        access_token = refresh_resp.json()["access_token"]
         print(f"New access token: {access_token}")
+
 
 # Get current thermostat data
 def get_device_status():
-    url = 'https://smartdevicemanagement.googleapis.com/v1/enterprises/' + projectid + '/devices'
-    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + access_token}
+    url = (
+        "https://smartdevicemanagement.googleapis.com/v1/enterprises/"
+        + projectid
+        + "/devices"
+    )
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + access_token,
+    }
     resp = requests.get(url, headers=headers)
     if resp.status_code != 200:
         print(resp.status_code)
         refresh_access()
-        headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + access_token}
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + access_token,
+        }
         resp = requests.get(url, headers=headers)
     nest = resp.json()
-    
+
     # Extract temperature, humidity, and mode data
-    temperature = nest['devices'][0]['traits']['sdm.devices.traits.Temperature']['ambientTemperatureCelsius'] * 9 / 5 + 32  # Celsius to Fahrenheit
-    humidity = nest['devices'][0]['traits']['sdm.devices.traits.Humidity']['ambientHumidityPercent']
-    mode = nest['devices'][0]['traits']['sdm.devices.traits.ThermostatHvac']['status']  # heating, cooling, off
-    
+    temperature = (
+        nest["devices"][0]["traits"]["sdm.devices.traits.Temperature"][
+            "ambientTemperatureCelsius"
+        ]
+        * 9
+        / 5
+        + 32
+    )  # Celsius to Fahrenheit
+    humidity = nest["devices"][0]["traits"]["sdm.devices.traits.Humidity"][
+        "ambientHumidityPercent"
+    ]
+    mode = nest["devices"][0]["traits"]["sdm.devices.traits.ThermostatHvac"][
+        "status"
+    ]  # heating, cooling, off
+
     return temperature, humidity, mode
+
 
 def calculate_heating_cost(duration_minutes):
     # Convert duration from minutes to hours
@@ -103,6 +130,7 @@ def calculate_heating_cost(duration_minutes):
     # Calculate the total cost
     heating_cost = therms_consumed * cost_per_therm
     return heating_cost
+
 
 # Save mode duration to DB
 def save_mode_duration(mode, duration_minutes):
@@ -114,13 +142,10 @@ def save_mode_duration(mode, duration_minutes):
             print(f"Heating cost for {duration_minutes} minutes: ${heating_cost:.2f}")
         else:
             heating_cost = 0  # No heating cost when the mode is not "HEATING"
-        
+
         # Connect to your postgres DB
         connection = psycopg2.connect(
-            host=db_host,
-            dbname=db_database,
-            user=db_username,
-            password=db_password
+            host=db_host, dbname=db_database, user=db_username, password=db_password
         )
         cursor = connection.cursor()
 
@@ -129,11 +154,15 @@ def save_mode_duration(mode, duration_minutes):
         INSERT INTO mode_duration (mode, duration_minutes, cost, timestamp)
         VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(insert_query, (mode, duration_minutes, heating_cost, datetime.now()))
+        cursor.execute(
+            insert_query, (mode, duration_minutes, heating_cost, datetime.now())
+        )
 
         # Commit the transaction
         connection.commit()
-        print(f"Mode duration ({mode}, {duration_minutes} mins, ${heating_cost:.2f} cost) inserted successfully!")
+        print(
+            f"Mode duration ({mode}, {duration_minutes} mins, ${heating_cost:.2f} cost) inserted successfully!"
+        )
 
     except Exception as e:
         print("Error while inserting data into PostgreSQL:", e)
@@ -145,19 +174,19 @@ def save_mode_duration(mode, duration_minutes):
         if connection:
             connection.close()
 
+
 def get_last_mode_and_timestamp():
     """Get the last recorded mode and timestamp from the database."""
     global last_mode, last_timestamp
     try:
         connection = psycopg2.connect(
-            host=db_host,
-            dbname=db_database,
-            user=db_username,
-            password=db_password
+            host=db_host, dbname=db_database, user=db_username, password=db_password
         )
         cursor = connection.cursor()
 
-        cursor.execute("SELECT mode, timestamp FROM nest_device_data ORDER BY timestamp DESC LIMIT 1")
+        cursor.execute(
+            "SELECT mode, timestamp FROM nest_device_data ORDER BY timestamp DESC LIMIT 1"
+        )
         result = cursor.fetchone()
         if result:
             last_mode, last_timestamp = result
@@ -173,10 +202,11 @@ def get_last_mode_and_timestamp():
         if connection:
             connection.close()
 
+
 # Main logic for tracking mode changes and calculating duration
 def main():
     global last_mode, last_timestamp
-    
+
     # Get the last mode and timestamp from the database
     get_last_mode_and_timestamp()
 
@@ -184,10 +214,12 @@ def main():
     temperature, humidity, mode = get_device_status()
 
     current_timestamp = datetime.now()
-    
+
     # If the mode has changed, calculate and save the duration
     if last_mode is not None:
-        duration = (current_timestamp - last_timestamp).total_seconds() / 60  # Duration in minutes
+        duration = (
+            current_timestamp - last_timestamp
+        ).total_seconds() / 60  # Duration in minutes
         print(f"Mode is still {last_mode}, duration: {duration:.2f} minutes.")
         save_mode_duration(last_mode, duration)
 
@@ -198,14 +230,12 @@ def main():
     last_mode = mode
     last_timestamp = current_timestamp
 
+
 # Save temperature and humidity data to PostgreSQL (from original script)
 def save_to_db(temperature, humidity, mode):
     try:
         connection = psycopg2.connect(
-            host=db_host,
-            dbname=db_database,
-            user=db_username,
-            password=db_password
+            host=db_host, dbname=db_database, user=db_username, password=db_password
         )
         cursor = connection.cursor()
 
@@ -215,9 +245,11 @@ def save_to_db(temperature, humidity, mode):
         VALUES (%s, %s, %s, %s)
         """
         cursor.execute(insert_query, (temperature, humidity, mode, datetime.now()))
-        
+
         connection.commit()
-        print(f"Temperature:{temperature}, humidity:{humidity}, and mode:{mode} data inserted successfully!")
+        print(
+            f"Temperature:{temperature}, humidity:{humidity}, and mode:{mode} data inserted successfully!"
+        )
     except Exception as e:
         print("Error while inserting data:", e)
     finally:
@@ -226,5 +258,6 @@ def save_to_db(temperature, humidity, mode):
         if connection:
             connection.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
