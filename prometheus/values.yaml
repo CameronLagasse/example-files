@@ -1,0 +1,36 @@
+# values.yaml
+
+# Prometheus configuration
+prometheus:
+  replicas: 4
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    limits:
+      memory: 4Gi
+      cpu: 2
+  storage:
+    enabled: true
+    size: 8Gi
+    class: "nfs-client"
+  alertmanager:
+    enabled: true
+    replicaCount: 1
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 0.5
+      limits:
+        memory: 1Gi
+        cpu: 1
+  config:
+    scrape_interval: 15s
+
+# Node Exporter configuration
+nodeExporter:
+  enabled: true
+  image:
+    repository: prom/node-exporter
+    tag: latest
+
