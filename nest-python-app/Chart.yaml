@@ -1,0 +1,5 @@
+apiVersion: v2
+name: nest-python-script
+description: A Helm chart for running a Python script every 5 minutes
+version: 0.1.0
+appVersion: "1.0"

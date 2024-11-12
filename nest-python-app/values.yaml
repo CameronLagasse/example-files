@@ -1,0 +1,27 @@
+image:
+  repository: python
+  tag: "3.9-slim"
+  pullPolicy: IfNotPresent
+
+schedule: "*/5 * * * *" # Every 5 minutes
+
+# Git repository information
+gitRepo:
+  url: "https://github.com/your-repo/nest-python-app.git"  # replace with your actual repository URL
+  branch: "main"  # specify branch if needed
+
+# Database and API credentials
+databaseCredentials:
+  username: "nest"
+  password: "your-password"
+  host: "your-db-host"
+  port: "5432"
+  database: "nest_data"
+
+nestCredentials:
+  oauth2clientid: 'your-oauth2-client-id'
+  clientsecret: 'your-client-secret'
+  projectid: 'your-project-id'
+  authorization_code: 'your-auth-code'
+  access_token: 'your-access-token'
+  refresh_token: 'your-refresh-token'

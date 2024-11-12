@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nest-python-script
+spec:
+  schedule: "{{ .Values.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: nest-python
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  # Install git
+                  apt-get update && apt-get install -y git && \
+                  # Make scripts directory
+                  mkdir -p /nest-python-app/scripts && \
+                  # Clone the repo
+                  git clone -b {{ .Values.gitRepo.branch }} https://${GIT_PAT}@{{ .Values.gitRepo.url | replace "https://" "" }} /nest-python-app/scripts && \
+                  cd /nest-python-app/scripts && \
+                  # Install dependencies
+                  pip install -r requirements.txt && \
+                  # Run the script
+                  python fetch_nest_data.py
+              env:
+                - name: GIT_PAT
+                  valueFrom:
+                    secretKeyRef:
+                      name: git-pat
+                      key: token
+                # Database Credentials
+                - name: DB_USERNAME
+                  value: "{{ .Values.databaseCredentials.username }}"
+                - name: DB_PASSWORD
+                  value: "{{ .Values.databaseCredentials.password }}"
+                - name: DB_HOST
+                  value: "{{ .Values.databaseCredentials.host }}"
+                - name: DB_PORT
+                  value: "{{ .Values.databaseCredentials.port }}"
+                - name: DB_DATABASE
+                  value: "{{ .Values.databaseCredentials.database }}"
+
+                # OAuth and API Credentials
+                - name: OAUTH2CLIENTID
+                  value: "{{ .Values.nestCredentials.oauth2clientid }}"
+                - name: CLIENTSECRET
+                  value: "{{ .Values.nestCredentials.clientsecret }}"
+                - name: PROJECTID
+                  value: "{{ .Values.nestCredentials.projectid }}"
+                - name: AUTHORIZATION_CODE
+                  value: "{{ .Values.nestCredentials.authorization_code }}"
+                - name: ACCESS_TOKEN
+                  value: "{{ .Values.nestCredentials.access_token }}"
+                - name: REFRESH_TOKEN
+                  value: "{{ .Values.nestCredentials.refresh_token }}"
+
+          restartPolicy: OnFailure
