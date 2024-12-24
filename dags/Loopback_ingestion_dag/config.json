@@ -1,0 +1,70 @@
+{
+    "tables": [],
+    "small_tables": [],
+    "options": {
+        "bucket_name": "your-bucket-name",
+        "dataset_name": "your-dataset",
+        "project_id": "your-project"
+    },
+    "k8s_executor_config": {
+        "job_namespace": "dagster",
+        "image_pull_policy": "Always",
+        "job_image": "your-repo-image:latest",
+        "max_concurrent": 20,
+        "resources": {
+            "requests": {
+                "memory": "8Gi",
+                "cpu": "4000m"
+            },
+            "limits": {
+                "memory": "8Gi",
+                "cpu": "4000m"
+            }
+        },
+        "per_step_k8s_config": {
+            "*": {
+                "container_config": {
+                    "workingDir": "/opt/dagster/dagster_home/storage/",
+                    "volume_mounts": [
+                        {
+                            "mount_path": "/opt/dagster/dagster_home/storage/",
+                            "name": "snowflake-data"
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "dagster-config"
+                            }
+                        }
+                    ],
+                    "resources": {
+                        "requests": {
+                            "memory": "8Gi",
+                            "cpu": "4000m"
+                        },
+                        "limits": {
+                            "memory": "8Gi",
+                            "cpu": "4000m"
+                        }
+                    }
+                },
+                "job_config": {
+                    "volumes": [
+                        {
+                            "name": "snowflake-data",
+                            "persistentVolumeClaim": {
+                                "claimName": "snowflake-pvc"
+                            }
+                        }
+                    ],
+                    "podTemplateSpecMetadata": {
+                        "annotations": {
+                            "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
