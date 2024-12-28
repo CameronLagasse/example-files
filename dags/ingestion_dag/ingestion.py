@@ -383,7 +383,7 @@ def save_to_gcs(context, table_name: list) -> List[str]:
         folder_name = folder_name.replace(".csv.gz", "")
         context.log.info(f"Local folder name is {folder_name}")
         gcs_object_path = (
-            f"Loopback/{dataset_name}/{folder_name}/{base_file_name}".strip("/")
+            f"<Vendor>/{dataset_name}/{folder_name}/{base_file_name}".strip("/")
         )
 
         # Upload the file to GCS
@@ -475,7 +475,7 @@ def load_to_bigquery(context, gcs_object_paths: List[str]):
 
 # Define the pipeline
 @job(executor_def=k8s_executor)
-def loopback_ingestion_pipeline():
+def ingestion_pipeline():
     # Step 1: Get the list of tables dynamically
     tables = select_tables()
 
@@ -497,7 +497,7 @@ def loopback_ingestion_pipeline():
     gcs_paths_small.map(load_to_bigquery)
 
 
-@sensor(target=loopback_ingestion_pipeline, default_status=DefaultSensorStatus.RUNNING)
+@sensor(target=ingestion_pipeline, default_status=DefaultSensorStatus.RUNNING)
 def check_snowflake_for_updates_sensor(context):
     try:
         # Query Snowflake for the latest DATAREFRESHID
@@ -569,6 +569,6 @@ def check_snowflake_for_updates_sensor(context):
 
 
 defs = Definitions(
-    jobs=[loopback_ingestion_pipeline],
+    jobs=[ingestion_pipeline],
     sensors=[check_snowflake_for_updates_sensor],
 )
