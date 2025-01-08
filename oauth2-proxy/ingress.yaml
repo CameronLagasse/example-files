@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+  name: oauth2-proxy
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: auth.app.example.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+    - host: auth.roivant.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - auth.app.example.com
+        - auth.example.com
+      secretName: auth.app.example.prod-tls

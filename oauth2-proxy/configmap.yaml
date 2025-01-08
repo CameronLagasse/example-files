@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  oauth2_proxy.cfg: |-
+    upstreams = [ "" ]
+    provider = "oidc"
+    whitelist_domains = ""
+    email_domains = ""
+    pass_access_token = true
+    cookie_domains = ""
+    cookie_secure = true
+    skip_provider_button = true
+    redirect_url = "https://your.domain.com/oauth2/callback"
+    oidc_issuer_url = "https://your.domain.com/oauth2/default"
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy
