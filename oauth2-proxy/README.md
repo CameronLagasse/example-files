@@ -50,16 +50,16 @@ We need to modify a few parts of the values file every time we deploy to a new n
 2. `configFile`: Here is an example of same arguments set in the config file for this Oauth2-proxy deployment to protect Dagster:
 
     ```yaml
-    upstreams = [ "https://dagster.roivant.io" ]
+    upstreams = [ "https://service.example.com" ]
         provider = "oidc"
-        whitelist_domains = "dagster.roivant.io"
-        email_domains = "roivant.com"
+        whitelist_domains = "service.example.com"
+        email_domains = "example.com"
         pass_access_token = true
-        cookie_domains = ".roivant.io"
+        cookie_domains = ".example.com"
         cookie_secure = true
         skip_provider_button = true
-        redirect_url = "https://auth.roivant.io/oauth2/callback"
-        oidc_issuer_url = "https://roivant.okta.com/oauth2/default"
+        redirect_url = "https://auth.example.com/oauth2/callback"
+        oidc_issuer_url = "https://example.okta.com/oauth2/default"
     ```
 
     You only need to change where dagster is specified with the URL of the service you are trying to put auth in front of.
@@ -83,7 +83,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: auth.app.roivant.io
+    - host: auth.app.example.com
       http:
         paths:
           - backend:
@@ -93,7 +93,7 @@ spec:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: auth.roivant.io
+    - host: auth.example.com
       http:
         paths:
           - backend:
@@ -105,9 +105,9 @@ spec:
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - auth.app.roivant.io
-        - auth.roivant.io
-      secretName: auth.app.roivant.prod-tls
+        - auth.app.example.com
+        - auth.example.com
+      secretName: auth.app.example.prod-tls
 ```
 
 Apply the ingress: `kubectl apply -f ingress.yaml -n oauth2-proxy` 
@@ -126,13 +126,13 @@ metadata:
     nginx.ingress.kubernetes.io/whitelist-source-range: 3.210.88.52/32, 34.102.42.201/32
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/auth-response-headers: "x-auth-request-user, x-auth-request-email, authorization"
-    nginx.ingress.kubernetes.io/auth-signin: "https://auth.roivant.io/oauth2/start?rd=$scheme://$host$request_uri"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.example.com/oauth2/start?rd=$scheme://$host$request_uri"
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.dagster.svc.cluster.local/oauth2/auth"
   name: dagster-ingress
   namespace: dagster
 spec:
   rules:
-  - host: dagster.app.roivant.io
+  - host: dagster.app.example.com
     http:
       paths:
       - backend:
@@ -142,7 +142,7 @@ spec:
               number: 80
         path: /
         pathType: ImplementationSpecific
-  - host: dagster.roivant.io
+  - host: dagster.example.com
     http:
       paths:
       - backend:
@@ -161,9 +161,9 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - dagster.app.roivant.io
-    - dagster.roivant.io
-    secretName: dagster.app.roivant.prod-tls
+    - dagster.app.example.com
+    - dagster.example.com
+    secretName: dagster.app.example.prod-tls
 ```
 
 > Note: The important changes here are the nginx annotations.
@@ -172,7 +172,7 @@ spec:
 nginx.ingress.kubernetes.io/whitelist-source-range: 3.210.88.52/32, 34.102.42.201/32
 nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 nginx.ingress.kubernetes.io/auth-response-headers: "x-auth-request-user, x-auth-request-email, authorization"
-nginx.ingress.kubernetes.io/auth-signin: "https://auth.roivant.io/oauth2/start?rd=$scheme://$host$request_uri"
+nginx.ingress.kubernetes.io/auth-signin: "https://auth.example.com/oauth2/start?rd=$scheme://$host$request_uri"
 nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.dagster.svc.cluster.local/oauth2/auth"
 ```
 
@@ -182,6 +182,6 @@ Apply the ingress `kubectl apply -f ingress.yaml -n dagster`.
 
 ## Conclusion
 
-You should now navigate to your services url like `https://dagster.roivant.io` and you should be redirected to Okta to authenticate. 
+You should now navigate to your services url like `https://dagster.example.com` and you should be redirected to Okta to authenticate. 
 
 By using OAuth2-Proxy and ingress-nginx together, we are able to ensure that authentication happens centrally while also applying fine-grained access control to different applications. Requests are routed through OAuth2-Proxy for authentication, and access is granted or denied based on user authentication and group membership.
